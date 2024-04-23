@@ -19,7 +19,7 @@ process CASANOVO {
     casanovo \
         sequence \
         --model ${model_weights_file} \
-        --output casanovo_results.mztab \
+        --output ${mzml_file.baseName}.mztab \
         ${mzml_file} \
         > >(tee "${mzml_file.baseName}.casanovo.stdout") 2> >(tee "${mzml_file.baseName}.casanovo.stderr" >&2)
 
