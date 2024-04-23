@@ -17,6 +17,7 @@ process CASANOVO {
     """
     echo "Running casanovo..."
     casanovo \
+        sequence \
         --model ${model_weights_file} \
         --output casanovo_results.mztab \
         ${mzml_file} \
