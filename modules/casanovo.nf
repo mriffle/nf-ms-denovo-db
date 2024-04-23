@@ -1,6 +1,8 @@
 process CASANOVO {
     publishDir "${params.result_dir}/casanovo", failOnError: true, mode: 'copy'
     label 'process_high_constant'
+    label 'process_high_memory'
+    label 'error_retry'
     container 'quay.io/protio/casanovo:4.1.0'
 
     input:
