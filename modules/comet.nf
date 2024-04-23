@@ -9,8 +9,7 @@ process COMET {
         path fasta_file
 
     output:
-        path("*.pep.xml"), emit: pepxml
-        path("*.pin"), emit: pin
+        path("*.txt"), emit: pepxml
         path("*.stdout"), emit: stdout
         path("*.stderr"), emit: stderr
 
