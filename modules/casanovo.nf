@@ -4,6 +4,7 @@ process CASANOVO {
     label 'process_high_memory'
     label 'error_retry'
     container 'quay.io/protio/casanovo:4.1.0'
+    containerOptions '--shm-size=1g'
 
     input:
         path mzml_file
