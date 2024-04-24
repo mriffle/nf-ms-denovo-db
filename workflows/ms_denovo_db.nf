@@ -4,6 +4,7 @@ include { COMET } from "../modules/comet"
 include { CASANOVO } from "../modules/casanovo"
 include { CREATE_PEPTIDE_FASTA } from "../modules/create_peptide_fasta"
 include { GLSEARCH } from "../modules/fasta_search"
+include { SPLIT_QUERY_FASTA } from "../modules/fasta_search"
 
 workflow wf_ms_denovo_db {
 
@@ -30,8 +31,12 @@ workflow wf_ms_denovo_db {
             COMET.out.comet_txt.collect(),
             CASANOVO.out.mztab.collect()
         )
-        GLSEARCH(
+        SPLIT_QUERY_FASTA(
             CREATE_PEPTIDE_FASTA.out.peptide_query_fasta,
+            params.requested_fasta_parts
+        )
+        GLSEARCH(
+            SPLIT_QUERY_FASTA.out.query_fasta_part.flatten(),
             library_fasta
         )
 
