@@ -42,7 +42,7 @@ process SPLIT_QUERY_FASTA {
     output:
         path("query_part*.fasta"), emit: query_fasta_part
         path("*.stderr"), emit: stderr
-        path("*.stdout"), emit: stderr
+        path("*.stdout"), emit: stdout
 
     script:
     """
