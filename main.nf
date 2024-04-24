@@ -13,6 +13,7 @@ workflow {
     fasta = file(params.fasta, checkIfExists: true)
     comet_params = file(params.comet_params, checkIfExists: true)
     casanovo_weights = file(params.casanovo_weights, checkIfExists: true)
+    library_fasta = file(params.library_fasta, checkIfExists: true)
 
     spectra_dir = file(params.spectra_dir, checkIfExists: true)
 
@@ -39,6 +40,7 @@ workflow {
         fasta, 
         comet_params, 
         casanovo_weights, 
+        library_fasta,
         from_raw_files
     )
 

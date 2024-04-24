@@ -3,6 +3,7 @@ include { MSCONVERT } from "../modules/msconvert"
 include { COMET } from "../modules/comet"
 include { CASANOVO } from "../modules/casanovo"
 include { CREATE_PEPTIDE_FASTA } from "../modules/create_peptide_fasta"
+include { GLSEARCH } from "../modules/fasta_search"
 
 workflow wf_ms_denovo_db {
 
@@ -11,6 +12,7 @@ workflow wf_ms_denovo_db {
         fasta
         comet_params
         casanovo_weights
+        library_fasta
         from_raw_files
     
     main:
@@ -28,4 +30,9 @@ workflow wf_ms_denovo_db {
             COMET.out.comet_txt.collect(),
             CASANOVO.out.mztab.collect()
         )
+        GLSEARCH(
+            CREATE_PEPTIDE_FASTA.out.peptide_query_fasta,
+            library_fasta
+        )
+
 }
