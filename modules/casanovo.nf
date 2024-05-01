@@ -7,6 +7,7 @@ process CASANOVO {
     input:
         path mzml_file
         path model_weights_file
+        path casanovo_config_file
 
     output:
         path("*.mztab"), emit: mztab
@@ -21,6 +22,7 @@ process CASANOVO {
         sequence \
         --model ${model_weights_file} \
         --output ${mzml_file.baseName}.mztab \
+        --config ${casanovo_config_file} \
         ${mzml_file} \
         > >(tee "${mzml_file.baseName}.casanovo.stdout") 2> >(tee "${mzml_file.baseName}.casanovo.stderr" >&2)
 
