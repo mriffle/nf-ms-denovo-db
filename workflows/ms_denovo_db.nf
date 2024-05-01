@@ -12,6 +12,7 @@ workflow wf_ms_denovo_db {
         spectra_file_ch
         fasta
         comet_params
+        casanovo_config_file
         casanovo_weights
         library_fasta
         from_raw_files
@@ -26,7 +27,7 @@ workflow wf_ms_denovo_db {
         }
 
         COMET(mzml_file_ch, comet_params, fasta)
-        CASANOVO(mzml_file_ch, casanovo_weights)
+        CASANOVO(mzml_file_ch, casanovo_weights, casanovo_config_file)
         CREATE_PEPTIDE_FASTA(
             COMET.out.comet_txt.collect(),
             CASANOVO.out.mztab.collect()

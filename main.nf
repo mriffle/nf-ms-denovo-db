@@ -12,6 +12,7 @@ workflow {
 
     fasta = file(params.fasta, checkIfExists: true)
     comet_params = file(params.comet_params, checkIfExists: true)
+    casanovo_config = file(params.casanovo_config_file, checkIfExists: true)
     casanovo_weights = file(params.casanovo_weights, checkIfExists: true)
     library_fasta = file(params.library_fasta, checkIfExists: true)
 
@@ -38,7 +39,8 @@ workflow {
     wf_ms_denovo_db(
         spectra_files_ch, 
         fasta, 
-        comet_params, 
+        comet_params,
+        casanovo_config,
         casanovo_weights, 
         library_fasta,
         from_raw_files
