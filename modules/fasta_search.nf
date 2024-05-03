@@ -8,6 +8,8 @@ process GLSEARCH {
     input:
         path query_fasta
         path library_fasta
+        val gap_initiation_penalty
+        val gap_extension_penalty
 
     output:
         path("*.gl.txt"), emit: glsearch_results
@@ -19,8 +21,8 @@ process GLSEARCH {
     /usr/local/bin/glsearch36 \
         -p \
         -s BP62 \
-        -f 0 \
-        -g -33 \
+        -f ${gap_initiation_penalty} \
+        -g ${gap_extension_penalty} \
         -b 1 \
         -m 8 \
         -T ${task.cpus} \

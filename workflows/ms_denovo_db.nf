@@ -38,7 +38,9 @@ workflow wf_ms_denovo_db {
         )
         GLSEARCH(
             SPLIT_QUERY_FASTA.out.query_fasta_part.flatten(),
-            library_fasta
+            library_fasta,
+            params.glsearch.gap_initiation_penalty,
+            params.glsearch.gap_extension_penalty
         )
 
 }
