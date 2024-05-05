@@ -6,6 +6,7 @@ include { CREATE_PEPTIDE_FASTA } from "../modules/create_peptide_fasta"
 include { GLSEARCH } from "../modules/fasta_search"
 include { BUILD_RESET_INPUT } from "../modules/build_reset_input"
 include { SPLIT_QUERY_FASTA } from "../modules/fasta_search"
+include { GENERATE_DECOYS } from "../modules/generate_decoys"
 
 workflow wf_ms_denovo_db {
 
@@ -37,9 +38,20 @@ workflow wf_ms_denovo_db {
             CREATE_PEPTIDE_FASTA.out.peptide_query_fasta,
             params.requested_fasta_parts
         )
+
+        if(params.library_generate_decoys) {
+            GENERATE_DECOYS(
+                params.library_decoy_prefix,
+                library_fasta
+            )
+            final_library_fasta = GENERATE_DECOYS.out.decoys_fasta
+        } else {
+            final_library_fasta = library_fasta
+        }
+
         GLSEARCH(
             SPLIT_QUERY_FASTA.out.query_fasta_part.flatten(),
-            library_fasta,
+            final_library_fasta,
             params.glsearch.gap_initiation_penalty,
             params.glsearch.gap_extension_penalty
         )
