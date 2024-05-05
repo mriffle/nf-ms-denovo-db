@@ -58,7 +58,9 @@ workflow wf_ms_denovo_db {
         BUILD_RESET_INPUT(
             CREATE_PEPTIDE_FASTA.out.comet_peptides,
             CREATE_PEPTIDE_FASTA.out.casanovo_peptides,
-            GLSEARCH.out.glsearch_results.collect()
+            GLSEARCH.out.glsearch_results.collect(),
+            final_library_fasta,
+            params.library_decoy_prefix
         )
 
 }
