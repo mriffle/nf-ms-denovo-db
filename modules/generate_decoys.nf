@@ -2,7 +2,7 @@
 process GENERATE_DECOYS {
     publishDir "${params.result_dir}/fasta", failOnError: true, mode: 'copy'
     label 'process_low'
-    container 'spctools/tpp:version6.2.0'
+    container 'quay.io/protio/tpp-decoy-generator:1.28.2012'
 
     input:
         val decoy_prefix
