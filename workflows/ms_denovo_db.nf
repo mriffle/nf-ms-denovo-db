@@ -4,6 +4,7 @@ include { COMET } from "../modules/comet"
 include { CASANOVO } from "../modules/casanovo"
 include { CREATE_PEPTIDE_FASTA } from "../modules/create_peptide_fasta"
 include { GLSEARCH } from "../modules/fasta_search"
+include { BUILD_RESET_INPUT } from "../modules/build_reset_input"
 include { SPLIT_QUERY_FASTA } from "../modules/fasta_search"
 
 workflow wf_ms_denovo_db {
@@ -41,6 +42,11 @@ workflow wf_ms_denovo_db {
             library_fasta,
             params.glsearch.gap_initiation_penalty,
             params.glsearch.gap_extension_penalty
+        )
+        BUILD_RESET_INPUT(
+            CREATE_PEPTIDE_FASTA.out.comet_peptides,
+            CREATE_PEPTIDE_FASTA.out.casanovo_peptides,
+            GLSEARCH.out.glsearch_results.collect()
         )
 
 }
