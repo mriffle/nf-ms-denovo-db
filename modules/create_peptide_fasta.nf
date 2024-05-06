@@ -1,11 +1,12 @@
 process CREATE_PEPTIDE_FASTA {
     publishDir "${params.result_dir}/peptide_fasta", failOnError: true, mode: 'copy'
     label 'process_low_constant'
-    container 'quay.io/protio/ms-denovo-db-utils:latest'
+    container 'quay.io/protio/ms-denovo-db-utils:1.0.4'
 
     input:
         path comet_results_files
         path casanovo_results_files
+        val decoy_prefix
 
     output:
         path("combined_results.fasta"), emit: peptide_query_fasta
@@ -16,7 +17,7 @@ process CREATE_PEPTIDE_FASTA {
     script:
     """
     echo "Collecting comet peptides..."
-    python3 /usr/local/bin/process_comet_results.py *.txt \
+    python3 /usr/local/bin/process_comet_results.py --decoy_prefix ${decoy_prefix} *.txt \
         > >(tee "comet_peptides.txt") 2> >(tee "collect_comet_peptides.stderr" >&2)
 
     echo "Collecting casanovo peptides..."

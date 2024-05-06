@@ -43,7 +43,8 @@ workflow {
         casanovo_config,
         casanovo_weights, 
         library_fasta,
-        from_raw_files
+        from_raw_files,
+        params.decoy_prefix
     )
 
 }
