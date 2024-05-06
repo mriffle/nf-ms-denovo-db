@@ -1,7 +1,7 @@
 process GENERATE_COMET_DECOYS {
     publishDir "${params.result_dir}/fasta", failOnError: true, mode: 'copy'
     label 'process_low'
-    container 'quay.io/protio/ms-denovo-db-utils:1.0.2'
+    container 'quay.io/protio/ms-denovo-db-utils:1.0.3'
 
     input:
         path fasta_file
@@ -24,7 +24,7 @@ process GENERATE_COMET_DECOYS {
 process GENERATE_LIBRARY_DECOYS {
     publishDir "${params.result_dir}/fasta", failOnError: true, mode: 'copy'
     label 'process_low'
-    container 'quay.io/protio/ms-denovo-db-utils:1.0.2'
+    container 'quay.io/protio/ms-denovo-db-utils:1.0.3'
 
     input:
         path fasta_file
