@@ -6,7 +6,8 @@ include { CREATE_PEPTIDE_FASTA } from "../modules/create_peptide_fasta"
 include { GLSEARCH } from "../modules/fasta_search"
 include { BUILD_RESET_INPUT } from "../modules/build_reset_input"
 include { SPLIT_QUERY_FASTA } from "../modules/fasta_search"
-include { GENERATE_DECOYS } from "../modules/generate_decoys"
+include { GENERATE_COMET_DECOYS } from "../modules/generate_decoys"
+include { GENERATE_LIBRARY_DECOYS } from "../modules/generate_decoys"
 
 workflow wf_ms_denovo_db {
 
@@ -28,8 +29,28 @@ workflow wf_ms_denovo_db {
             mzml_file_ch = spectra_file_ch
         }
 
-        COMET(mzml_file_ch, comet_params, fasta)
-        CASANOVO(mzml_file_ch, casanovo_weights, casanovo_config_file)
+        // generate reverse protein sequence decoys
+        GENERATE_COMET_DECOYS(
+            fasta
+        )
+        GENERATE_LIBRARY_DECOYS(
+            library_fasta
+        )
+
+        COMET(
+            mzml_file_ch,
+            comet_params,
+            GENERATE_COMET_DECOYS.out.decoys_fasta,
+            GENERATE_LIBRARY_DECOYS.out.decoys_fasta
+        )
+        
+        
+        CASANOVO(
+            mzml_file_ch,
+            casanovo_weights,
+            casanovo_config_file
+        )
+
         CREATE_PEPTIDE_FASTA(
             COMET.out.comet_txt.collect(),
             CASANOVO.out.mztab.collect()
@@ -39,22 +60,13 @@ workflow wf_ms_denovo_db {
             params.requested_fasta_parts
         )
 
-        if(params.library_generate_decoys) {
-            GENERATE_DECOYS(
-                params.library_decoy_prefix,
-                library_fasta
-            )
-            final_library_fasta = GENERATE_DECOYS.out.decoys_fasta
-        } else {
-            final_library_fasta = library_fasta
-        }
-
         GLSEARCH(
             SPLIT_QUERY_FASTA.out.query_fasta_part.flatten(),
-            final_library_fasta,
+            GENERATE_LIBRARY_DECOYS.out.decoys_fasta,
             params.glsearch.gap_initiation_penalty,
             params.glsearch.gap_extension_penalty
         )
+        
         BUILD_RESET_INPUT(
             CREATE_PEPTIDE_FASTA.out.comet_peptides,
             CREATE_PEPTIDE_FASTA.out.casanovo_peptides,

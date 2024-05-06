@@ -1,30 +1,45 @@
-
-process GENERATE_DECOYS {
+process GENERATE_COMET_DECOYS {
     publishDir "${params.result_dir}/fasta", failOnError: true, mode: 'copy'
     label 'process_low'
-    container 'quay.io/protio/tpp-decoy-generator:1.28.2012'
+    container 'quay.io/protio/ms-denovo-db-utils:1.0.2'
 
     input:
-        val decoy_prefix
         path fasta_file
 
     output:
         path("*.stderr"), emit: stderr
-        path("*.stdout"), emit: stdout
         path("${fasta_file.baseName}.plusdecoys.fasta"), emit: decoys_fasta
 
     script:
     """
-    echo "Generating decoys using TPP..."
-        decoyFastaGenerator.pl -c KR -n P ${fasta_file} ${decoy_prefix} ${fasta_file.baseName}.plusdecoys.fasta \
-        >${fasta_file.baseName}.plusdecoys.fasta.stdout \
+    echo "Generating decoys..."
+        python3 /usr/local/bin/generate_reverse_decoys.py ${fasta_file} \
+        >${fasta_file.baseName}.plusdecoys.fasta \
         2>${fasta_file.baseName}.plusdecoys.fasta.stderr
 
     echo "Done!" # Needed for proper exit
     """
+}
 
-    stub:
+process GENERATE_LIBRARY_DECOYS {
+    publishDir "${params.result_dir}/fasta", failOnError: true, mode: 'copy'
+    label 'process_low'
+    container 'quay.io/protio/ms-denovo-db-utils:1.0.2'
+
+    input:
+        path fasta_file
+
+    output:
+        path("*.stderr"), emit: stderr
+        path("${fasta_file.baseName}.plusdecoys.fasta"), emit: decoys_fasta
+
+    script:
     """
-    touch "${fasta_file.baseName}.plusdecoys.fasta"
+    echo "Generating decoys..."
+        python3 /usr/local/bin/generate_reverse_decoys.py ${fasta_file} \
+        >${fasta_file.baseName}.plusdecoys.fasta \
+        2>${fasta_file.baseName}.plusdecoys.fasta.stderr
+
+    echo "Done!" # Needed for proper exit
     """
 }

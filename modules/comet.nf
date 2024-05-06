@@ -6,7 +6,8 @@ process COMET {
     input:
         path mzml_file
         path comet_params_file
-        path fasta_file
+        path comet_fasta_file
+        path library_fasta_file
 
     output:
         path("*.txt"), emit: comet_txt
@@ -15,9 +16,13 @@ process COMET {
 
     script:
     """
+    echo "Combining FASTAs..."
+    cp ${comet_fasta_file} combined.fasta
+    cat ${library_fasta_file} >>combined.fasta
+
     echo "Running comet..."
     comet \
-        -P${comet_params_file} \
+        -Pcombined.fasta \
         -D${fasta_file} \
         ${mzml_file} \
         > >(tee "${mzml_file.baseName}.comet.stdout") 2> >(tee "${mzml_file.baseName}.comet.stderr" >&2)
