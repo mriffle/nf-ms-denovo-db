@@ -72,7 +72,7 @@ workflow wf_ms_denovo_db {
             CREATE_PEPTIDE_FASTA.out.casanovo_peptides,
             GLSEARCH.out.glsearch_results.collect(),
             GENERATE_LIBRARY_DECOYS.out.decoys_fasta,
-            params.library_decoy_prefix
+            "DECOY_"
         )
 
 }
