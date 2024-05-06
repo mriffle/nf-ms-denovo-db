@@ -1,7 +1,7 @@
 process CREATE_PEPTIDE_FASTA {
     publishDir "${params.result_dir}/peptide_fasta", failOnError: true, mode: 'copy'
     label 'process_low_constant'
-    container 'quay.io/protio/ms-denovo-db-utils:latest'
+    container 'quay.io/protio/ms-denovo-db-utils:1.0.4'
 
     input:
         path comet_results_files

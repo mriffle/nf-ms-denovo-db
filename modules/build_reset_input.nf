@@ -1,7 +1,7 @@
 process BUILD_RESET_INPUT {
     publishDir "${params.result_dir}/reset", failOnError: true, mode: 'copy'
     label 'process_low'
-    container 'quay.io/protio/ms-denovo-db-utils:1.0.1'
+    container 'quay.io/protio/ms-denovo-db-utils:1.0.4'
 
     input:
         path comet_peptides
