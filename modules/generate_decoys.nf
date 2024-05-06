@@ -5,6 +5,7 @@ process GENERATE_COMET_DECOYS {
 
     input:
         path fasta_file
+        val decoy_prefix
 
     output:
         path("*.stderr"), emit: stderr
@@ -14,6 +15,7 @@ process GENERATE_COMET_DECOYS {
     """
     echo "Generating decoys..."
         python3 /usr/local/bin/generate_reverse_decoys.py ${fasta_file} \
+        --decoy_prefix ${decoy_prefix} \
         >${fasta_file.baseName}.plusdecoys.fasta \
         2>${fasta_file.baseName}.plusdecoys.fasta.stderr
 
@@ -28,6 +30,7 @@ process GENERATE_LIBRARY_DECOYS {
 
     input:
         path fasta_file
+        val decoy_prefix
 
     output:
         path("*.stderr"), emit: stderr
@@ -37,6 +40,7 @@ process GENERATE_LIBRARY_DECOYS {
     """
     echo "Generating decoys..."
         python3 /usr/local/bin/generate_reverse_decoys.py ${fasta_file} \
+        --decoy_prefix ${decoy_prefix} \
         >${fasta_file.baseName}.plusdecoys.fasta \
         2>${fasta_file.baseName}.plusdecoys.fasta.stderr
 

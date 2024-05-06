@@ -19,6 +19,7 @@ workflow wf_ms_denovo_db {
         casanovo_weights
         library_fasta
         from_raw_files
+        decoy_prefix
     
     main:
 
@@ -31,10 +32,12 @@ workflow wf_ms_denovo_db {
 
         // generate reverse protein sequence decoys
         GENERATE_COMET_DECOYS(
-            fasta
+            fasta,
+            decoy_prefix
         )
         GENERATE_LIBRARY_DECOYS(
-            library_fasta
+            library_fasta,
+            decoy_prefix
         )
 
         COMET(
@@ -53,7 +56,8 @@ workflow wf_ms_denovo_db {
 
         CREATE_PEPTIDE_FASTA(
             COMET.out.comet_txt.collect(),
-            CASANOVO.out.mztab.collect()
+            CASANOVO.out.mztab.collect(),
+            decoy_prefix
         )
         SPLIT_QUERY_FASTA(
             CREATE_PEPTIDE_FASTA.out.peptide_query_fasta,
@@ -72,7 +76,7 @@ workflow wf_ms_denovo_db {
             CREATE_PEPTIDE_FASTA.out.casanovo_peptides,
             GLSEARCH.out.glsearch_results.collect(),
             GENERATE_LIBRARY_DECOYS.out.decoys_fasta,
-            "DECOY_"
+            decoy_prefix
         )
 
 }
