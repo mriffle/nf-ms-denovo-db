@@ -1,7 +1,7 @@
 process GENERATE_COMET_DECOYS {
     publishDir "${params.result_dir}/fasta", failOnError: true, mode: 'copy'
     label 'process_low'
-    container 'quay.io/protio/ms-denovo-db-utils:1.0.5'
+    container params.images.ms_denovo_db_utils
 
     input:
         path fasta_file
