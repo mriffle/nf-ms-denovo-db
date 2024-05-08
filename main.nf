@@ -2,6 +2,9 @@
 
 nextflow.enable.dsl = 2
 
+// get container images to use
+include { params } from './container_images.nf'
+
 // Sub workflows
 include { wf_ms_denovo_db } from "./workflows/ms_denovo_db"
 

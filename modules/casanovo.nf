@@ -1,7 +1,7 @@
 process CASANOVO {
     publishDir "${params.result_dir}/casanovo", failOnError: true, mode: 'copy'
     label 'process_high_constant'
-    container 'quay.io/protio/casanovo:4.1.0'
+    container params.images.casanovo
     containerOptions '--shm-size=1g'
 
     input:

@@ -3,7 +3,7 @@ process GLSEARCH {
     label 'process_mid_constant'
     label 'process_low_memory'
     label 'process_long'
-    container 'quay.io/protio/fasta:36.3.8i'
+    container params.images.fasta
 
     input:
         path query_fasta
