@@ -1,5 +1,5 @@
 process GENERATE_COMET_DECOYS {
-    publishDir "${params.result_dir}/fasta", failOnError: true, mode: 'copy'
+    publishDir "${params.result_dir}/fasta", failOnError: true, mode: 'copy', pattern: '*.stderr'
     label 'process_low'
     container params.images.ms_denovo_db_utils
 
@@ -24,7 +24,7 @@ process GENERATE_COMET_DECOYS {
 }
 
 process GENERATE_LIBRARY_DECOYS {
-    publishDir "${params.result_dir}/fasta", failOnError: true, mode: 'copy'
+    publishDir "${params.result_dir}/fasta", failOnError: true, mode: 'copy', pattern: '*.stderr'
     label 'process_low'
     container params.images.ms_denovo_db_utils
 
