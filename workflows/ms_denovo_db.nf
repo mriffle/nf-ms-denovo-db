@@ -8,6 +8,7 @@ include { BUILD_RESET_INPUT } from "../modules/build_reset_input"
 include { SPLIT_QUERY_FASTA } from "../modules/fasta_search"
 include { GENERATE_COMET_DECOYS } from "../modules/generate_decoys"
 include { GENERATE_LIBRARY_DECOYS } from "../modules/generate_decoys"
+include { RESET } from "../modules/reset"
 
 workflow wf_ms_denovo_db {
 
@@ -77,6 +78,10 @@ workflow wf_ms_denovo_db {
             GLSEARCH.out.glsearch_results.collect(),
             GENERATE_LIBRARY_DECOYS.out.decoys_fasta,
             decoy_prefix
+        )
+
+        RESET(
+            BUILD_RESET_INPUT.out.reset_input
         )
 
 }
