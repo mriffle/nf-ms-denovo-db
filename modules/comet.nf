@@ -7,7 +7,6 @@ process COMET {
         path mzml_file
         path comet_params_file
         path comet_fasta_file
-        path library_fasta_file
 
     output:
         path("*.txt"), emit: comet_txt
@@ -16,14 +15,10 @@ process COMET {
 
     script:
     """
-    echo "Combining FASTAs..."
-    cp ${comet_fasta_file} combined.fasta
-    cat ${library_fasta_file} >>combined.fasta
-
     echo "Running comet..."
     comet \
         -P${comet_params_file} \
-        -Dcombined.fasta \
+        -D${comet_fasta_file} \
         ${mzml_file} \
         > >(tee "${mzml_file.baseName}.comet.stdout") 2> >(tee "${mzml_file.baseName}.comet.stderr" >&2)
 
@@ -34,5 +29,26 @@ process COMET {
     """
     touch "${mzml_file.baseName}.pep.xml"
     touch "${mzml_file.baseName}.pin"
+    """
+}
+
+process GENERATE_COMET_FASTA {
+    label 'process_low'
+    container params.images.ubuntu
+
+    input:
+        path comet_fasta
+        path library_fasta
+
+    output:
+        path("comet_combined.fasta"), emit: comet_fasta
+
+    script:
+    """
+    echo "Combining FASTAs..."
+    cp ${library_fasta_file} comet_combined.fasta
+    cat ${comet_fasta_file} >>comet_combined.fasta
+
+    echo "Done!" # Needed for proper exit
     """
 }
