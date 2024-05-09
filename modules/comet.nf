@@ -46,8 +46,8 @@ process GENERATE_COMET_FASTA {
     script:
     """
     echo "Combining FASTAs..."
-    cp ${library_fasta_file} comet_combined.fasta
-    cat ${comet_fasta_file} >>comet_combined.fasta
+    cp ${library_fasta} comet_combined.fasta
+    cat ${comet_fasta} >>comet_combined.fasta
 
     echo "Done!" # Needed for proper exit
     """
