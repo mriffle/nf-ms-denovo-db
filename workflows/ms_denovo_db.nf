@@ -5,6 +5,8 @@ include { GENERATE_COMET_FASTA } from "../modules/comet"
 include { CASANOVO } from "../modules/casanovo"
 include { CREATE_PEPTIDE_FASTA } from "../modules/create_peptide_fasta"
 include { GLSEARCH } from "../modules/fasta_search"
+include { DIAMOND } from "../modules/diamond"
+include { CREATE_DIAMOND_DB } from "../modules/diamond"
 include { BUILD_RESET_INPUT } from "../modules/build_reset_input"
 include { SPLIT_QUERY_FASTA } from "../modules/fasta_search"
 include { GENERATE_COMET_DECOYS } from "../modules/generate_decoys"
@@ -54,7 +56,6 @@ workflow wf_ms_denovo_db {
             GENERATE_COMET_FASTA.out.comet_fasta,
         )
         
-        
         CASANOVO(
             mzml_file_ch,
             casanovo_weights,
@@ -71,17 +72,37 @@ workflow wf_ms_denovo_db {
             params.requested_fasta_parts
         )
 
-        GLSEARCH(
-            SPLIT_QUERY_FASTA.out.query_fasta_part.flatten(),
-            GENERATE_LIBRARY_DECOYS.out.decoys_fasta,
-            params.glsearch.gap_initiation_penalty,
-            params.glsearch.gap_extension_penalty
-        )
+        homology_search_results = null
+        if(params.homology_search_engine.toLowerCase() == 'glsearch36') {
+            GLSEARCH(
+                SPLIT_QUERY_FASTA.out.query_fasta_part.flatten(),
+                GENERATE_LIBRARY_DECOYS.out.decoys_fasta,
+                params.homology_search.gap_initiation_penalty,
+                params.homology_search.gap_extension_penalty
+            )
+            homology_search_results = GLSEARCH.out.glsearch_results
+
+        } else if(params.homology_search_engine.toLowerCase() == 'diamond') {
+            CREATE_DIAMOND_DB(
+                GENERATE_LIBRARY_DECOYS.out.decoys_fasta
+            )
+
+            DIAMOND(
+                SPLIT_QUERY_FASTA.out.query_fasta_part.flatten(),
+                GENERATE_LIBRARY_DECOYS.out.diamond_db,
+                params.homology_search.gap_initiation_penalty,
+                params.homology_search.gap_extension_penalty
+            )
+            homology_search_results = DIAMOND.out.diamond_results
+            
+        } else {
+            error "'${params.homology_search_engine}' is an invalid argument for params.search_engine!"
+        }
 
         BUILD_RESET_INPUT(
             CREATE_PEPTIDE_FASTA.out.comet_peptides,
             CREATE_PEPTIDE_FASTA.out.casanovo_peptides,
-            GLSEARCH.out.glsearch_results.collect(),
+            homology_search_results.collect(),
             GENERATE_LIBRARY_DECOYS.out.decoys_fasta,
             decoy_prefix
         )
@@ -89,5 +110,4 @@ workflow wf_ms_denovo_db {
         RESET(
             BUILD_RESET_INPUT.out.reset_input
         )
-
 }
