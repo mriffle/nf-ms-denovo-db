@@ -67,15 +67,22 @@ workflow wf_ms_denovo_db {
             CASANOVO.out.mztab.collect(),
             decoy_prefix
         )
-        SPLIT_QUERY_FASTA(
-            CREATE_PEPTIDE_FASTA.out.peptide_query_fasta,
-            params.requested_fasta_parts
-        )
+
+        query_fasta_parts = null
+        if(params.requested_fasta_parts > 1) {
+            SPLIT_QUERY_FASTA(
+                CREATE_PEPTIDE_FASTA.out.peptide_query_fasta,
+                params.requested_fasta_parts
+            )
+            query_fasta_parts = SPLIT_QUERY_FASTA.out.query_fasta_part.flatten()
+        } else {
+            query_fasta_parts = CREATE_PEPTIDE_FASTA.out.peptide_query_fasta
+        }
 
         homology_search_results = null
         if(params.homology_search_engine.toLowerCase() == 'glsearch36') {
             GLSEARCH(
-                SPLIT_QUERY_FASTA.out.query_fasta_part.flatten(),
+                query_fasta_parts,
                 GENERATE_LIBRARY_DECOYS.out.decoys_fasta,
                 params.homology_search.gap_initiation_penalty,
                 params.homology_search.gap_extension_penalty
@@ -88,7 +95,7 @@ workflow wf_ms_denovo_db {
             )
 
             DIAMOND(
-                SPLIT_QUERY_FASTA.out.query_fasta_part.flatten(),
+                query_fasta_parts,
                 CREATE_DIAMOND_DB.out.diamond_db,
                 params.homology_search.gap_initiation_penalty,
                 params.homology_search.gap_extension_penalty
