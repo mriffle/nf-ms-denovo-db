@@ -23,11 +23,11 @@ process DIAMOND {
         --gapopen ${gap_initiation_penalty} \
         --gapextend ${gap_extension_penalty} \
         --outfmt 6 \
-        --max-target-seqs 1
+        --max-target-seqs 1 \
         --threads ${task.cpus} \
-        --query ${query_fasta}
+        --query ${query_fasta} \
         --db ${library_db} \
-        --out ${query_fasta.baseName}.dmnd.txt
+        --out ${query_fasta.baseName}.dmnd.txt \
         > >(tee "${query_fasta.baseName}.stdout") 2> >(tee "${query_fasta.baseName}.stderr" >&2)
 
     echo "DONE!" # Needed for proper exit
