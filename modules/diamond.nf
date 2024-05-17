@@ -23,7 +23,9 @@ process DIAMOND {
         --gapopen ${gap_initiation_penalty} \
         --gapextend ${gap_extension_penalty} \
         --outfmt 6 \
+        --min-score 0 \
         --max-target-seqs 1 \
+        --iterate \
         --threads ${task.cpus} \
         --query ${query_fasta} \
         --db ${library_db} \
