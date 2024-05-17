@@ -11,7 +11,7 @@ process DIAMOND {
         val gap_extension_penalty
 
     output:
-        path("*.dmnd.txt"), emit: glsearch_results
+        path("*.dmnd.txt"), emit: diamond_results
         path("*.stderr"), emit: stderr
         path("*.stdout"), emit: stdout
 
