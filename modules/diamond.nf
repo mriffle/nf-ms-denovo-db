@@ -18,7 +18,7 @@ process DIAMOND {
     script:
     """
     echo "Running diamond..."
-    blastp \
+    diamond blastp \
         --matrix BLOSUM62 \
         --gapopen ${gap_initiation_penalty} \
         --gapextend ${gap_extension_penalty} \
@@ -53,7 +53,7 @@ process CREATE_DIAMOND_DB {
     script:
     """
     echo "Making diamond db..."
-    makedb \
+    diamond makedb \
         --threads ${task.cpus} \
         --in ${library_fasta} \
         -d ${library_fasta.baseName} \
