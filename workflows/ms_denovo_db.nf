@@ -89,12 +89,12 @@ workflow wf_ms_denovo_db {
 
             DIAMOND(
                 SPLIT_QUERY_FASTA.out.query_fasta_part.flatten(),
-                GENERATE_LIBRARY_DECOYS.out.diamond_db,
+                CREATE_DIAMOND_DB.out.diamond_db,
                 params.homology_search.gap_initiation_penalty,
                 params.homology_search.gap_extension_penalty
             )
             homology_search_results = DIAMOND.out.diamond_results
-            
+
         } else {
             error "'${params.homology_search_engine}' is an invalid argument for params.search_engine!"
         }
