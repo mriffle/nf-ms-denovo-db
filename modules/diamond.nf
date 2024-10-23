@@ -44,7 +44,7 @@ process DIAMOND {
 }
 
 process CREATE_DIAMOND_DB {
-    //storeDir "${params.diamond_cache_directory}"
+    storeDir "${params.diamond_cache_directory}"
     publishDir "${params.result_dir}/diamond", pattern: "*.stderr", failOnError: true, mode: 'copy'
     publishDir "${params.result_dir}/diamond", pattern: "*.stdout", failOnError: true, mode: 'copy'
     label 'process_high'
@@ -56,8 +56,6 @@ process CREATE_DIAMOND_DB {
 
     output:
         path("${library_fasta.baseName}.dmnd"), emit: diamond_db
-        path("*.stderr"), emit: stderr
-        path("*.stdout"), emit: stdout
 
     script:
     """
