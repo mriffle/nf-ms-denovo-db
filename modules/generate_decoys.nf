@@ -1,4 +1,5 @@
 process GENERATE_COMET_DECOYS {
+    storeDir "${params.fasta_cache_directory}"
     publishDir "${params.result_dir}/fasta", failOnError: true, mode: 'copy', pattern: '*.stderr'
     label 'process_low'
     container params.images.ms_denovo_db_utils
@@ -8,7 +9,6 @@ process GENERATE_COMET_DECOYS {
         val decoy_prefix
 
     output:
-        path("*.stderr"), emit: stderr
         path("${fasta_file.baseName}.plusdecoys.fasta"), emit: decoys_fasta
 
     script:
@@ -24,6 +24,7 @@ process GENERATE_COMET_DECOYS {
 }
 
 process GENERATE_LIBRARY_DECOYS {
+    storeDir "${params.fasta_cache_directory}"
     publishDir "${params.result_dir}/fasta", failOnError: true, mode: 'copy', pattern: '*.stderr'
     label 'process_low'
     container params.images.ms_denovo_db_utils
@@ -33,7 +34,6 @@ process GENERATE_LIBRARY_DECOYS {
         val decoy_prefix
 
     output:
-        path("*.stderr"), emit: stderr
         path("${fasta_file.baseName}.plusdecoys.fasta"), emit: decoys_fasta
 
     script:

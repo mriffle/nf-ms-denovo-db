@@ -34,6 +34,7 @@ process COMET {
 }
 
 process GENERATE_COMET_FASTA {
+    storeDir "${params.fasta_cache_directory}"
     label 'process_low'
     container params.images.ubuntu
 
