@@ -23,9 +23,16 @@ process DIAMOND {
         --gapopen ${gap_initiation_penalty} \
         --gapextend ${gap_extension_penalty} \
         --outfmt 6 \
-        --min-score 0 \
+		-c1 \
+		--ultra-sensitive \
+		-s2 \
+		--id2 1 \
+		--short-query-ungapped-bitscore 1 \
+		--algo 0 \
+		--masking 0 \
+		--gapped-filter-evalue 0 \
+		--min-score 1 \
         --max-target-seqs 1 \
-        --iterate \
         --threads ${task.cpus} \
         --query ${query_fasta} \
         --db ${library_db} \
