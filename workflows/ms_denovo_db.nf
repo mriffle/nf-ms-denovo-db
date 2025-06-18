@@ -1,7 +1,6 @@
 // Modules
 include { MSCONVERT } from "../modules/msconvert"
 include { COMET } from "../modules/comet"
-include { GENERATE_COMET_FASTA } from "../modules/comet"
 include { CASANOVO } from "../modules/casanovo"
 include { CREATE_PEPTIDE_FASTA } from "../modules/create_peptide_fasta"
 include { GLSEARCH } from "../modules/fasta_search"
@@ -44,16 +43,10 @@ workflow wf_ms_denovo_db {
             decoy_prefix
         )
 
-        // create fasta for comet searches
-        GENERATE_COMET_FASTA(
-            GENERATE_COMET_DECOYS.out.decoys_fasta,
-            GENERATE_LIBRARY_DECOYS.out.decoys_fasta 
-        )
-
         COMET(
             mzml_file_ch,
             comet_params,
-            GENERATE_COMET_FASTA.out.comet_fasta,
+            GENERATE_COMET_DECOYS.out.decoys_fasta,
         )
         
         CASANOVO(

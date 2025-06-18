@@ -14,7 +14,7 @@ workflow {
     comet_params = file(params.comet_params, checkIfExists: true)
     casanovo_config = file(params.casanovo_config_file, checkIfExists: true)
     casanovo_weights = file(params.casanovo_weights, checkIfExists: true)
-    library_fasta = file(params.library_fasta, checkIfExists: true)
+    annotated_fasta = file(params.annotated_fasta, checkIfExists: true)
 
     spectra_dir = file(params.spectra_dir, checkIfExists: true)
 
@@ -42,7 +42,7 @@ workflow {
         comet_params,
         casanovo_config,
         casanovo_weights, 
-        library_fasta,
+        annotated_fasta,
         from_raw_files,
         params.decoy_prefix
     )

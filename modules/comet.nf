@@ -32,25 +32,3 @@ process COMET {
     touch "${mzml_file.baseName}.pin"
     """
 }
-
-process GENERATE_COMET_FASTA {
-    storeDir "${params.fasta_cache_directory}"
-    label 'process_low'
-    container params.images.ubuntu
-
-    input:
-        path comet_fasta
-        path library_fasta
-
-    output:
-        path("comet_combined.fasta"), emit: comet_fasta
-
-    script:
-    """
-    echo "Combining FASTAs..."
-    cp ${library_fasta} comet_combined.fasta
-    cat ${comet_fasta} >>comet_combined.fasta
-
-    echo "Done!" # Needed for proper exit
-    """
-}
