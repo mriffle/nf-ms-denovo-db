@@ -3,11 +3,9 @@ include { MSCONVERT } from "../modules/msconvert"
 include { COMET } from "../modules/comet"
 include { CASANOVO } from "../modules/casanovo"
 include { CREATE_PEPTIDE_FASTA } from "../modules/create_peptide_fasta"
-include { GLSEARCH } from "../modules/fasta_search"
 include { DIAMOND } from "../modules/diamond"
 include { CREATE_DIAMOND_DB } from "../modules/diamond"
 include { BUILD_RESET_INPUT } from "../modules/build_reset_input"
-include { SPLIT_QUERY_FASTA } from "../modules/fasta_search"
 include { GENERATE_COMET_DECOYS } from "../modules/generate_decoys"
 include { GENERATE_LIBRARY_DECOYS } from "../modules/generate_decoys"
 include { RESET } from "../modules/reset"
@@ -62,34 +60,14 @@ workflow wf_ms_denovo_db {
             comet_decoy_prefix
         )
 
-        query_fasta_parts = null
-        if(params.requested_fasta_parts > 1) {
-            SPLIT_QUERY_FASTA(
-                CREATE_PEPTIDE_FASTA.out.peptide_query_fasta,
-                params.requested_fasta_parts
-            )
-            query_fasta_parts = SPLIT_QUERY_FASTA.out.query_fasta_part.flatten()
-        } else {
-            query_fasta_parts = CREATE_PEPTIDE_FASTA.out.peptide_query_fasta
-        }
-
         homology_search_results = null
-        if(params.homology_search_engine.toLowerCase() == 'glsearch36') {
-            GLSEARCH(
-                query_fasta_parts,
-                GENERATE_LIBRARY_DECOYS.out.decoys_fasta,
-                params.homology_search.gap_initiation_penalty,
-                params.homology_search.gap_extension_penalty
-            )
-            homology_search_results = GLSEARCH.out.glsearch_results
-
-        } else if(params.homology_search_engine.toLowerCase() == 'diamond') {
+        if(params.homology_search_engine.toLowerCase() == 'diamond') {
             CREATE_DIAMOND_DB(
                 GENERATE_LIBRARY_DECOYS.out.decoys_fasta
             )
 
             DIAMOND(
-                query_fasta_parts,
+                CREATE_PEPTIDE_FASTA.out.peptide_query_fasta,
                 CREATE_DIAMOND_DB.out.diamond_db,
                 params.homology_search.gap_initiation_penalty,
                 params.homology_search.gap_extension_penalty

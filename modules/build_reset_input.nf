@@ -6,7 +6,7 @@ process BUILD_RESET_INPUT {
     input:
         path comet_peptides
         path casanovo_peptides
-        path glsearch_results
+        path homology_search_results
         path fasta_file
         val library_decoy_prefix
 
@@ -20,7 +20,7 @@ process BUILD_RESET_INPUT {
     python3 /usr/local/bin/build_reset_input.py \
         ${comet_peptides} \
         ${casanovo_peptides} \
-        . \
+        ${homology_search_results} \
         ${fasta_file} \
         ${library_decoy_prefix} \
         > >(tee "reset_input.txt") 2> >(tee "build_reset_input.stderr" >&2)

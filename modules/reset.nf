@@ -16,7 +16,7 @@ process RESET {
     """
     echo "Running RESET-Percolator..."
     python3 -m percolator_RESET \
-        --initial_dir glsearch_bitscore \
+        --initial_dir diamond_bitscore \
         --dynamic_competition F \
         ${reset_input} \
         > >(tee "reset.stdout") 2> >(tee "reset.comet.stderr" >&2)
