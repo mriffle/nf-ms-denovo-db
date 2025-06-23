@@ -17,6 +17,7 @@ process RESET {
     echo "Running RESET-Percolator..."
     python3 -m percolator_RESET \
         --initial_dir diamond_perc_identity \
+        --train_FDR_threshold 0.1 \
         --dynamic_competition F \
         ${reset_input} \
         > >(tee "reset.stdout") 2> >(tee "reset.comet.stderr" >&2)
