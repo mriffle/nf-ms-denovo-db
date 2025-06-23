@@ -44,7 +44,8 @@ workflow {
         casanovo_weights, 
         annotated_fasta,
         from_raw_files,
-        params.decoy_prefix
+        params.comet_decoy_prefix,
+        params.library_decoy_prefix
     )
 
 }

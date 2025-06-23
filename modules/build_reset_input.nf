@@ -8,7 +8,7 @@ process BUILD_RESET_INPUT {
         path casanovo_peptides
         path glsearch_results
         path fasta_file
-        val decoy_prefix
+        val library_decoy_prefix
 
     output:
         path("reset_input.txt"), emit: reset_input
@@ -22,7 +22,7 @@ process BUILD_RESET_INPUT {
         ${casanovo_peptides} \
         . \
         ${fasta_file} \
-        ${decoy_prefix} \
+        ${library_decoy_prefix} \
         > >(tee "reset_input.txt") 2> >(tee "build_reset_input.stderr" >&2)
 
 

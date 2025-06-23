@@ -6,7 +6,7 @@ process CREATE_PEPTIDE_FASTA {
     input:
         path comet_results_files
         path casanovo_results_files
-        val decoy_prefix
+        val comet_decoy_prefix
 
     output:
         path("combined_results.fasta"), emit: peptide_query_fasta
@@ -17,7 +17,7 @@ process CREATE_PEPTIDE_FASTA {
     script:
     """
     echo "Collecting comet peptides..."
-    python3 /usr/local/bin/process_comet_results.py --decoy_prefix ${decoy_prefix} *.txt \
+    python3 /usr/local/bin/process_comet_results.py --decoy_prefix ${comet_decoy_prefix} *.txt \
         > >(tee "comet_peptides.txt") 2> >(tee "collect_comet_peptides.stderr" >&2)
 
     echo "Collecting casanovo peptides..."
