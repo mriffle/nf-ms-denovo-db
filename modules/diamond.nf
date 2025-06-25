@@ -32,7 +32,8 @@ process DIAMOND {
 		--masking 0 \
 		--gapped-filter-evalue 0 \
 		--min-score 1 \
-        --max-target-seqs 1 \
+        --max-target-seqs 0 \
+        --top 0 \
         --threads ${task.cpus} \
         --query ${query_fasta} \
         --db ${library_db} \
