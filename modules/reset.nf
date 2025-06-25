@@ -9,7 +9,6 @@ process RESET {
     output:
         path("FDR_percolator.peptides.txt"), emit: reset_peptides
         path("FDR_percolator.decoy_peptides.txt"), emit: reset_decoy_peptides
-        path("FDR_percolator.psms.txt"), emit: reset_psms
         path("FDR_percolator.log.txt"), emit: reset_log
         path("*.stdout"), emit: stdout
         path("*.stderr"), emit: stderr
@@ -23,7 +22,6 @@ process RESET {
         --dynamic_competition F \
         --FDR_threshold 1 \
         --report_decoys T \
-        --get_psms T \
         ${reset_input} \
         > >(tee "reset.stdout") 2> >(tee "reset.comet.stderr" >&2)
 
