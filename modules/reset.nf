@@ -19,6 +19,9 @@ process RESET {
         --initial_dir diamond_perc_identity \
         --train_FDR_threshold 0.1 \
         --dynamic_competition F \
+        --FDR_threshold 1 \
+        --report_decoys T \
+        --get_psms T \
         ${reset_input} \
         > >(tee "reset.stdout") 2> >(tee "reset.comet.stderr" >&2)
 
