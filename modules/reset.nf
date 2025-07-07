@@ -17,7 +17,7 @@ process RESET {
     """
     echo "Running RESET-Percolator..."
     python3 -m percolator_RESET \
-        --initial_dir combined_rank_score \
+        --initial_dir diamond_bit_score \
         --train_FDR_threshold 0.2 \
         --dynamic_competition F \
         --FDR_threshold 1 \
