@@ -27,6 +27,7 @@ process GENERATE_LIBRARY_DECOYS {
     storeDir "${params.fasta_cache_directory}"
     publishDir "${params.result_dir}/fasta", failOnError: true, mode: 'copy', pattern: '*.stderr'
     label 'process_low'
+    label 'process_long'
     container params.images.ms_denovo_db_utils
 
     input:
