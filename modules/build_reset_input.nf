@@ -9,6 +9,7 @@ process BUILD_RESET_INPUT {
         path homology_search_results
         path fasta_file
         val library_decoy_prefix
+        val comet_decoy_prefix
 
     output:
         path("reset_input.txt"), emit: reset_input
@@ -23,6 +24,7 @@ process BUILD_RESET_INPUT {
         ${homology_search_results} \
         ${fasta_file} \
         ${library_decoy_prefix} \
+        ${comet_decoy_prefix} \
         > >(tee "reset_input.txt") 2> >(tee "build_reset_input.stderr" >&2)
 
 

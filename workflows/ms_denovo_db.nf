@@ -83,7 +83,8 @@ workflow wf_ms_denovo_db {
             CREATE_PEPTIDE_FASTA.out.casanovo_peptides,
             homology_search_results.collect(),
             GENERATE_LIBRARY_DECOYS.out.decoys_fasta,
-            library_decoy_prefix
+            library_decoy_prefix,
+            comet_decoy_prefix
         )
 
         RESET(
