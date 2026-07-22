@@ -3,7 +3,7 @@ process CASANOVO {
     label 'process_high_constant'
     container params.images.casanovo
 
-    containerOptions = { 
+    containerOptions {
 
         // When the executor is awsbatch, --shm-size is expecting the number of MiB
         // otherwise it is expecting the number of bytes
@@ -14,7 +14,7 @@ process CASANOVO {
             } else if (workflow.containerEngine == "docker") {
                 options += ' --gpus all'
             }
-            
+
             if (params.cuda_launch_blocking) {
                 options += ' -e CUDA_LAUNCH_BLOCKING=1'
             }
@@ -23,11 +23,10 @@ process CASANOVO {
         return options
     }
 
-    // don't melt the GPU
-    if (params.use_gpus) {
-        maxForks = 1
-    }
-    
+    // When running on GPUs, CASANOVO is limited to one concurrent task via
+    // `withName: CASANOVO { maxForks = 1 }` in nextflow.config (a process body
+    // may not contain `if` statements under the Nextflow 26 parser).
+
     input:
         path mzml_file
         path model_weights_file
@@ -51,5 +50,13 @@ process CASANOVO {
         > >(tee "${mzml_file.baseName}.casanovo.stdout") 2> >(tee "${mzml_file.baseName}.casanovo.stderr" >&2)
 
     echo "DONE!" # Needed for proper exit
+    """
+
+    stub:
+    """
+    touch "${mzml_file.baseName}.mztab"
+    touch "${mzml_file.baseName}.log"
+    touch "${mzml_file.baseName}.casanovo.stdout"
+    touch "${mzml_file.baseName}.casanovo.stderr"
     """
 }

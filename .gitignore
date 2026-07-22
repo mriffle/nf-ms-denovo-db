@@ -1,0 +1,17 @@
+# Local Nextflow 26 install (installed via `curl -s https://get.nextflow.io | bash`)
+/nextflow
+/.nxf_home/
+nxf_install.log
+
+# Nextflow runtime artifacts
+.nextflow/
+.nextflow.log*
+work/
+
+# Stub-test outputs and pipeline caches/results (default + test profile)
+/.test/
+/results/
+/reports/
+/fasta_cache/
+/diamond_db_cache/
+/mzml_cache/

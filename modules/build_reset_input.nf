@@ -30,4 +30,10 @@ process BUILD_RESET_INPUT {
 
     echo "DONE!" # Needed for proper exit
     """
+
+    stub:
+    """
+    touch reset_input.txt
+    touch build_reset_input.stderr
+    """
 }

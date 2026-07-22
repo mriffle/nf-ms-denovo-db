@@ -17,11 +17,11 @@ process CREATE_PEPTIDE_FASTA {
     script:
     """
     echo "Collecting comet peptides..."
-    python3 /usr/local/bin/process_comet_results.py --decoy_prefix ${comet_decoy_prefix} *.txt \
+    python3 /usr/local/bin/process_comet_results.py --decoy_prefix ${comet_decoy_prefix} ${comet_results_files} \
         > >(tee "comet_peptides.txt") 2> >(tee "collect_comet_peptides.stderr" >&2)
 
     echo "Collecting casanovo peptides..."
-    python3 /usr/local/bin/process_casanovo_results.py *.mztab \
+    python3 /usr/local/bin/process_casanovo_results.py ${casanovo_results_files} \
         > >(tee "casanovo_peptides.txt") 2> >(tee "collect_casanovo_peptides.stderr" >&2)
 
     echo "Create FASTA from combined results..."
@@ -29,5 +29,13 @@ process CREATE_PEPTIDE_FASTA {
         > >(tee "combined_results.fasta") 2> >(tee "combine_into_fasta.stderr" >&2)
 
     echo "DONE!" # Needed for proper exit
+    """
+
+    stub:
+    """
+    touch combined_results.fasta
+    touch comet_peptides.txt
+    touch casanovo_peptides.txt
+    touch create_peptide_fasta.stderr
     """
 }

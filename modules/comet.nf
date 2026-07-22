@@ -28,7 +28,8 @@ process COMET {
 
     stub:
     """
-    touch "${mzml_file.baseName}.pep.xml"
-    touch "${mzml_file.baseName}.pin"
+    touch "${mzml_file.baseName}.txt"
+    touch "${mzml_file.baseName}.comet.stdout"
+    touch "${mzml_file.baseName}.comet.stderr"
     """
 }

@@ -1,0 +1,46 @@
+name: CI
+
+# Runs the stub test harness on every push and pull request. The stub run
+# executes each process' `stub:` block (no containers, tiny fixtures), so it
+# validates DSL syntax, config parsing, DAG wiring, and declared outputs on
+# Nextflow 26 without needing the real bioinformatics tools or large inputs.
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  stub-test:
+    name: Stub run (Nextflow ${{ matrix.NXF_VER }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        NXF_VER:
+          - "26.04.6"
+
+    env:
+      NXF_VER: ${{ matrix.NXF_VER }}
+      NXF_HOME: ${{ github.workspace }}/.nxf_home
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Install Nextflow ${{ matrix.NXF_VER }}
+        run: |
+          curl -s https://get.nextflow.io | bash
+          ./nextflow -version
+
+      - name: Lint pipeline (informational)
+        continue-on-error: true
+        run: ./nextflow lint .
+
+      - name: Run stub test harness
+        run: bash tests/stub_test.sh

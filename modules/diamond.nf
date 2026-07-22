@@ -23,15 +23,15 @@ process DIAMOND {
         --gapopen ${gap_initiation_penalty} \
         --gapextend ${gap_extension_penalty} \
         --outfmt 6 \
-		-c1 \
-		--ultra-sensitive \
-		-s2 \
-		--id2 1 \
-		--short-query-ungapped-bitscore 1 \
-		--algo 0 \
-		--masking 0 \
-		--gapped-filter-evalue 0 \
-		--min-score 1 \
+        -c1 \
+        --ultra-sensitive \
+        -s2 \
+        --id2 1 \
+        --short-query-ungapped-bitscore 1 \
+        --algo 0 \
+        --masking 0 \
+        --gapped-filter-evalue 0 \
+        --min-score 1 \
         --top 0 \
         --threads ${task.cpus} \
         --query ${query_fasta} \
@@ -40,6 +40,13 @@ process DIAMOND {
         > >(tee "${query_fasta.baseName}.stdout") 2> >(tee "${query_fasta.baseName}.stderr" >&2)
 
     echo "DONE!" # Needed for proper exit
+    """
+
+    stub:
+    """
+    touch ${query_fasta.baseName}.dmnd.txt
+    touch ${query_fasta.baseName}.stdout
+    touch ${query_fasta.baseName}.stderr
     """
 }
 
@@ -67,5 +74,10 @@ process CREATE_DIAMOND_DB {
         > >(tee "${library_fasta.baseName}.makedb.stdout") 2> >(tee "${library_fasta.baseName}.makedb.stderr" >&2)
 
     echo "DONE!" # Needed for proper exit
+    """
+
+    stub:
+    """
+    touch ${library_fasta.baseName}.dmnd
     """
 }

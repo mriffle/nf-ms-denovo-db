@@ -1,5 +1,5 @@
 process GENERATE_COMET_DECOYS {
-    storeDir "${params.fasta_cache_directory}"
+    storeDir "${params.fasta_cache_directory}/comet"
     publishDir "${params.result_dir}/fasta", failOnError: true, mode: 'copy', pattern: '*.stderr'
     label 'process_low'
     container params.images.ms_denovo_db_utils
@@ -21,10 +21,15 @@ process GENERATE_COMET_DECOYS {
 
     echo "Done!" # Needed for proper exit
     """
+
+    stub:
+    """
+    touch ${fasta_file.baseName}.plusdecoys.fasta
+    """
 }
 
 process GENERATE_LIBRARY_DECOYS {
-    storeDir "${params.fasta_cache_directory}"
+    storeDir "${params.fasta_cache_directory}/library"
     publishDir "${params.result_dir}/fasta", failOnError: true, mode: 'copy', pattern: '*.stderr'
     label 'process_low'
     label 'process_long'
@@ -40,7 +45,7 @@ process GENERATE_LIBRARY_DECOYS {
     script:
     def output_extension = fasta_file.name.endsWith('.gz') ? 'fasta.gz' : 'fasta'
     def output_file = "${fasta_file.baseName}.plusdecoys.${output_extension}"
-    
+
     """
     echo "Generating decoys..."
         python3 /usr/local/bin/generate_reverse_decoys.py ${fasta_file} \
@@ -49,5 +54,11 @@ process GENERATE_LIBRARY_DECOYS {
         2>${fasta_file.baseName}.plusdecoys.fasta.stderr
 
     echo "Done!" # Needed for proper exit
+    """
+
+    stub:
+    def output_extension = fasta_file.name.endsWith('.gz') ? 'fasta.gz' : 'fasta'
+    """
+    touch ${fasta_file.baseName}.plusdecoys.${output_extension}
     """
 }

@@ -19,29 +19,29 @@ workflow {
     spectra_dir = file(params.spectra_dir, checkIfExists: true)
 
     // get our mzML files
-    mzml_files = file("$spectra_dir/*.mzML")
+    mzml_files = files("$spectra_dir/*.mzML")
 
     // get our raw files
-    raw_files = file("$spectra_dir/*.raw")
+    raw_files = files("$spectra_dir/*.raw")
 
     if(mzml_files.size() < 1 && raw_files.size() < 1) {
         error "No raw or mzML files found in: $spectra_dir"
     }
 
     if(mzml_files.size() > 0) {
-        spectra_files_ch = Channel.fromList(mzml_files)
-        from_raw_files = false;
+        spectra_files_ch = channel.fromList(mzml_files)
+        from_raw_files = false
     } else {
-        spectra_files_ch = Channel.fromList(raw_files)
-        from_raw_files = true;
+        spectra_files_ch = channel.fromList(raw_files)
+        from_raw_files = true
     }
 
     wf_ms_denovo_db(
-        spectra_files_ch, 
-        fasta, 
+        spectra_files_ch,
+        fasta,
         comet_params,
         casanovo_config,
-        casanovo_weights, 
+        casanovo_weights,
         annotated_fasta,
         from_raw_files,
         params.comet_decoy_prefix,
@@ -51,33 +51,12 @@ workflow {
 }
 
 //
-// Used for email notifications
-//
-def email() {
-    // Create the email text:
-    def (subject, msg) = EmailTemplate.email(workflow, params)
-    // Send the email:
-    if (params.email) {
-        sendMail(
-            to: "$params.email",
-            subject: subject,
-            body: msg
-        )
-    }
-}
-
-//
 // This is a dummy workflow for testing
 //
 workflow dummy {
     println "This is a workflow that doesn't do anything."
 }
 
-// Email notifications:
-workflow.onComplete {
-    try {
-        email()
-    } catch (Exception e) {
-        println "Warning: Error sending completion email."
-    }
-}
+// NOTE: completion-email handling lives in nextflow.config as
+// `workflow.onComplete`. Under the Nextflow 26 script parser, top-level event
+// handlers can no longer be declared in main.nf.

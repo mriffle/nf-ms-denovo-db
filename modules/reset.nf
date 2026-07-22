@@ -23,8 +23,17 @@ process RESET {
         --FDR_threshold 1 \
         --report_decoys T \
         ${reset_input} \
-        > >(tee "reset.stdout") 2> >(tee "reset.comet.stderr" >&2)
+        > >(tee "reset.stdout") 2> >(tee "reset.stderr" >&2)
 
     echo "DONE!" # Needed for proper exit
+    """
+
+    stub:
+    """
+    touch FDR_percolator.peptides.txt
+    touch FDR_percolator.decoy_peptides.txt
+    touch FDR_percolator.log.txt
+    touch reset.stdout
+    touch reset.stderr
     """
 }
