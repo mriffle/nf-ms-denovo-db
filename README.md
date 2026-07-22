@@ -6,9 +6,12 @@ database by combining a database search with *de novo* sequencing, then mapping
 the merged peptide list onto a well-annotated protein database by homology and
 controlling the false discovery rate (FDR) with RESET.
 
-The method is described in the accompanying draft:
+The original design is described in
 [`resources/denovo-db.pdf`](resources/denovo-db.pdf) — *Detecting peptides outside
 the database using de novo sequencing and database search* (Noble & Keich).
+**Note:** that document predates the current implementation and is out of date in
+places (for example, homology search now uses DIAMOND rather than glsearch, and
+Casanovo is a newer version). Treat the code as the source of truth.
 
 > In metaproteomics the question is usually not "is peptide *x* present?" but
 > "is the observed spectrum from a peptide **identical or homologous** to something
@@ -166,6 +169,12 @@ bash tests/stub_test.sh
 The same harness runs automatically on every push and pull request via
 [GitHub Actions](.github/workflows/ci.yml), pinned to Nextflow 26. Test fixtures
 live in [`tests/data/`](tests/data).
+
+**Coverage note:** the stub harness validates DSL/config parsing, DAG wiring, and
+each process' declared outputs — it does **not** run the real tools, so it cannot
+catch mistakes in the actual tool command lines. The direct-mzML input branch
+(input already `.mzML`) and the GPU path (`use_gpus=true`) are also not exercised.
+A real integration smoke test on tiny inputs is a known gap (see `SPECIFICATION.md`).
 
 ## Containers
 
