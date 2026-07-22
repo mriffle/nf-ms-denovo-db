@@ -25,7 +25,7 @@ Casanovo is a newer version). Treat the code as the source of truth.
 
 ```mermaid
 flowchart TD
-    spectra[".raw / .mzML spectra"] -->|MSCONVERT<br/>(only if .raw)| mzml["mzML"]
+    spectra[".raw / .mzML spectra"] -->|MSCONVERT if raw| mzml["mzML"]
     subset["subset protein FASTA"] --> cdec["GENERATE_COMET_DECOYS"]
 
     mzml --> comet["COMET<br/>database search"]
