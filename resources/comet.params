@@ -16,7 +16,7 @@ num_threads = 0                        # 0=poll CPU to set num threads; else spe
 #
 # masses
 #
-peptide_mass_tolerance = 20.00
+peptide_mass_tolerance = 10.00
 peptide_mass_units = 2                 # 0=amu, 1=mmu, 2=ppm
 mass_type_parent = 1                   # 0=average masses, 1=monoisotopic masses
 mass_type_fragment = 1                 # 0=average masses, 1=monoisotopic masses
@@ -26,10 +26,10 @@ isotope_error = 3                      # 0=off, 1=0/1 (C13 error), 2=0/1/2, 3=0/
 #
 # search enzyme
 #
-search_enzyme_number = 1               # choose from list at end of this params file
+search_enzyme_number = 2               # choose from list at end of this params file
 search_enzyme2_number = 0              # second enzyme; set to 0 if no second enzyme
-num_enzyme_termini = 2                 # 1 (semi-digested), 2 (fully digested, default), 8 C-term unspecific , 9 N-term unspecific
-allowed_missed_cleavage = 2            # maximum value is 5; for enzyme search
+num_enzyme_termini = 1                 # 1 (semi-digested), 2 (fully digested, default), 8 C-term unspecific , 9 N-term unspecific
+allowed_missed_cleavage = 3            # maximum value is 5; for enzyme search
 
 #
 # Up to 9 variable modifications are supported
@@ -55,9 +55,9 @@ scale_fragmentNL = 0                   # 0=no, 1=yes; fragment neutral loss mass
 # ion trap ms/ms:  1.0005 tolerance, 0.4 offset (mono masses), theoretical_fragment_ions = 1
 # high res ms/ms:    0.02 tolerance, 0.0 offset (mono masses), theoretical_fragment_ions = 0, spectrum_batch_size = 15000
 #
-fragment_bin_tol = 1.0005              # binning to use on fragment ions
-fragment_bin_offset = 0.4              # offset position to start the binning (0.0 to 1.0)
-theoretical_fragment_ions = 1          # 0=use flanking peaks, 1=M peak only
+fragment_bin_tol = 0.02                # binning to use on fragment ions
+fragment_bin_offset = 0.0              # offset position to start the binning (0.0 to 1.0)
+theoretical_fragment_ions = 0          # 0=use flanking peaks, 1=M peak only
 use_A_ions = 0
 use_B_ions = 1
 use_C_ions = 0
@@ -77,7 +77,7 @@ output_pepxmlfile = 0                  # 0=no, 1=yes  write pepXML file
 output_mzidentmlfile = 0               # 0=no, 1=yes  write mzIdentML file
 output_percolatorfile = 0              # 0=no, 1=yes  write Percolator pin file
 print_expect_score = 1                 # 0=no, 1=yes to replace Sp with expect in out & sqt
-num_output_lines = 5                   # num peptide results to show
+num_output_lines = 1                   # num peptide results to show
 
 sample_enzyme_number = 1               # Sample enzyme which is possibly different than the one applied to the search.
                                        # Used to calculate NTT & NMC in pepXML output (default=1 for trypsin).

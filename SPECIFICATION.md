@@ -217,13 +217,14 @@ Casanovo.
 - **`resources/denovo-db.pdf` is outdated.** It is the original plan, not the spec.
   Confirmed stale: homology search is DIAMOND (not glsearch); Casanovo is newer than
   the PDF's 4.1.0. Do not treat PDF/code divergences as bugs.
-- **`resources/comet.params` is only an EXAMPLE** and is currently configured for
-  **low-resolution ion-trap** fragment matching (`fragment_bin_tol = 1.0005`,
-  `offset 0.4`, `theoretical_fragment_ions = 1`). If the target data is high-res
-  Orbitrap, a user who copies this example verbatim will get poor results. Left
-  as-is pending a decision on the intended default instrument. (The enzyme /
-  missed-cleavage / precursor-ppm choices in it are legitimate search-strategy
-  settings, not bugs.)
+- **`resources/comet.params` is still only an EXAMPLE** — `params.comet_params`
+  resolves to `./comet.params` in the launch directory, so users supply their own.
+  It is now configured to match the method as described in the manuscript:
+  **high-resolution** fragment matching (`fragment_bin_tol = 0.02`, `offset 0.0`,
+  `theoretical_fragment_ions = 0`), semi-tryptic digestion (`num_enzyme_termini = 1`)
+  with Trypsin/P (`search_enzyme_number = 2`, no proline suppression), 3 missed
+  cleavages, 10 ppm precursor tolerance, and one match per spectrum
+  (`num_output_lines = 1`). Tune per instrument before running real data.
 - **Stub test validates wiring, not tool behavior.** It cannot catch a bad Comet /
   Casanovo / DIAMOND / RESET command line. No real integration smoke test exists yet.
 - **Untested paths:** direct-mzML input (input already `.mzML`) and the GPU path
@@ -251,9 +252,14 @@ Casanovo.
 
 ## 10. TODOs / roadmap
 
-- Decide the intended default instrument for `resources/comet.params`; if high-res,
-  update the fragment settings (`0.02 / 0.0 / 0`) and add a "tune per instrument"
-  header.
+- ~~Decide the intended default instrument for `resources/comet.params`~~ — done
+  2026-07-30: high-res Orbitrap (`0.02 / 0.0 / 0`), aligned with the manuscript's
+  Methods §Step 1.
+- **`process_comet_results` does not filter on Comet's per-spectrum rank column
+  (`num`).** It is correct now only because `resources/comet.params` sets
+  `num_output_lines = 1`; a user whose own params file keeps more matches per
+  spectrum silently inflates `num_spectra` and `num_peptidoforms`. Fix belongs in
+  `ms-denovo-db-utils`, not here.
 - Add a real integration smoke test (tiny real inputs + containers) to catch
   tool-argument regressions the stub test can't.
 - (Optional) Restore a branded HTML completion email via `notification.template`.
