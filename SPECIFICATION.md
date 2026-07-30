@@ -255,6 +255,23 @@ Casanovo.
 - ~~Decide the intended default instrument for `resources/comet.params`~~ — done
   2026-07-30: high-res Orbitrap (`0.02 / 0.0 / 0`), aligned with the manuscript's
   Methods §Step 1.
+- **Move Casanovo to 5.2.0.** Decided 2026-07-30; the manuscript now says 5.2.0.
+  Blocked on an image: `quay.io/protio/casanovo` currently has 4.1.0, 4.2.1, 4.3.0,
+  4.3.0-1 and 5.0.0, and 5.0.0 is not sufficient — the precursor-mass penalty
+  survived until 5.2.0 removed it from de novo mode (PR #575), which is the whole
+  reason for the move. Once a 5.2.0 image is published, change **together**:
+  - `container_images.config` → `casanovo:5.2.0`
+  - `params.casanovo_weights` → `.../v5.2.0/casanovo_orbitrap_v5-2-0.ckpt`
+    (5.2.0 ships instrument-specific weights; ours is Orbitrap, not timsTOF)
+
+  Pre-flight checks before switching, neither yet done:
+  - `process_casanovo_results` requires the mzTab columns `sequence`, `charge`,
+    `search_engine_score[1]`, `calc_mass_to_charge`, `exp_mass_to_charge`. Confirm
+    5.2.0 still emits all five.
+  - 5.0.0 changed the peptide score from the mean to the **product** of per-residue
+    scores, so `casanovo_best_score` — a RESET feature — changes meaning and
+    distribution. Expect the ranking to shift; this is not a regression.
+
 - **`process_comet_results` does not filter on Comet's per-spectrum rank column
   (`num`).** It is correct now only because `resources/comet.params` sets
   `num_output_lines = 1`; a user whose own params file keeps more matches per
