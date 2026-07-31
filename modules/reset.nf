@@ -6,6 +6,7 @@ process RESET {
     input:
         path reset_input
         val model
+        val seed
 
     output:
         path("FDR_percolator.peptides.txt"), emit: reset_peptides
@@ -19,6 +20,15 @@ process RESET {
     // images predating the option reject the argument, so always passing it
     // would break every run against an older pin.
     def model_arg = model ? "--model ${model} " : ''
+    // Omitted when unset so RESET keeps seeding from the clock, which its
+    // author considers part of the method: error control holds in expectation
+    // over the random decoy split, not for any one draw. Set this only to make
+    // a run reproducible for debugging or comparison.
+    //
+    // Tested as a trimmed string, not for Groovy truth: `seed` arrives as a
+    // number when set in a params file, and 0 is a legitimate seed that plain
+    // truthiness would silently discard.
+    def seed_arg = seed?.toString()?.trim() ? "--seed ${seed} " : ''
     """
     echo "Running RESET-Percolator..."
     python3 -m percolator_RESET \
@@ -27,7 +37,7 @@ process RESET {
         --dynamic_competition F \
         --FDR_threshold 1 \
         --report_decoys T \
-        ${model_arg}${reset_input} \
+        ${model_arg}${seed_arg}${reset_input} \
         > >(tee "reset.stdout") 2> >(tee "reset.stderr" >&2)
 
     echo "DONE!" # Needed for proper exit

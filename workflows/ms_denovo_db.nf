@@ -89,6 +89,7 @@ workflow wf_ms_denovo_db {
 
         RESET(
             BUILD_RESET_INPUT.out.reset_input,
-            params.reset_model
+            params.reset_model,
+            params.reset_seed
         )
 }
