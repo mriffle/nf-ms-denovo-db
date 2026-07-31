@@ -70,7 +70,8 @@ workflow wf_ms_denovo_db {
                 CREATE_PEPTIDE_FASTA.out.peptide_query_fasta,
                 CREATE_DIAMOND_DB.out.diamond_db,
                 params.homology_search.gap_initiation_penalty,
-                params.homology_search.gap_extension_penalty
+                params.homology_search.gap_extension_penalty,
+                params.homology_search.seed_shapes
             )
             homology_search_results = DIAMOND.out.diamond_results
 

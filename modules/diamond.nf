@@ -9,6 +9,7 @@ process DIAMOND {
         path library_db
         val gap_initiation_penalty
         val gap_extension_penalty
+        val seed_shapes
 
     output:
         path("*.dmnd.txt"), emit: diamond_results
@@ -25,7 +26,7 @@ process DIAMOND {
         --outfmt 6 \
         -c1 \
         --ultra-sensitive \
-        -s2 \
+        --shapes ${seed_shapes} \
         --id2 1 \
         --short-query-ungapped-bitscore 1 \
         --algo 0 \
