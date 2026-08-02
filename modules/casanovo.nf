@@ -29,7 +29,7 @@ process CASANOVO {
 
     input:
         path mzml_file
-        path model_weights_file
+        val model_weights
         path casanovo_config_file
 
     output:
@@ -39,12 +39,22 @@ process CASANOVO {
         path("*.stderr"), emit: stderr
 
     script:
+    // Casanovo >= 5.0.0 replaced --output with --output_dir + --output_root, and
+    // no longer strips a suffix from the root, so pass the bare basename here:
+    // --output_root foo yields foo.mztab and foo.log.
+    //
+    // Weights are a path *inside the container* (baked into the image), not a
+    // file Nextflow staged -- Nextflow cannot stage what only exists in an image.
+    // Omitted entirely when unset, in which case Casanovo downloads a released
+    // checkpoint matching the instrument.
+    def model_arg = model_weights?.toString()?.trim() ? "--model ${model_weights} " : ''
     """
     echo "Running casanovo..."
     casanovo \
         sequence \
-        --model ${model_weights_file} \
-        --output ${mzml_file.baseName}.mztab \
+        ${model_arg}\
+        --output_dir . \
+        --output_root ${mzml_file.baseName} \
         --config ${casanovo_config_file} \
         ${mzml_file} \
         > >(tee "${mzml_file.baseName}.casanovo.stdout") 2> >(tee "${mzml_file.baseName}.casanovo.stderr" >&2)

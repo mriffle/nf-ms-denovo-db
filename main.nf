@@ -13,7 +13,10 @@ workflow {
     fasta = file(params.fasta, checkIfExists: true)
     comet_params = file(params.comet_params, checkIfExists: true)
     casanovo_config = file(params.casanovo_config_file, checkIfExists: true)
-    casanovo_weights = file(params.casanovo_weights, checkIfExists: true)
+    // NOT file() -- the checkpoint is baked into the Casanovo image, so this is a
+    // path inside the container that does not exist on the host. See
+    // params.casanovo_weights in nextflow.config.
+    casanovo_weights = params.casanovo_weights
     annotated_fasta = file(params.annotated_fasta, checkIfExists: true)
 
     spectra_dir = file(params.spectra_dir, checkIfExists: true)

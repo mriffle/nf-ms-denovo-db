@@ -256,18 +256,31 @@ Casanovo.
   2026-07-30: high-res Orbitrap (`0.02 / 0.0 / 0`), aligned with the manuscript's
   Methods §Step 1.
 - **Move Casanovo to 5.2.0.** Decided 2026-07-30; the manuscript now says 5.2.0.
-  Blocked on an image: `quay.io/protio/casanovo` currently has 4.1.0, 4.2.1, 4.3.0,
-  4.3.0-1 and 5.0.0, and 5.0.0 is not sufficient — the precursor-mass penalty
-  survived until 5.2.0 removed it from de novo mode (PR #575), which is the whole
-  reason for the move. Once a 5.2.0 image is published, change **together**:
-  - `container_images.config` → `casanovo:5.2.0`
-  - `params.casanovo_weights` → `.../v5.2.0/casanovo_orbitrap_v5-2-0.ckpt`
-    (5.2.0 ships instrument-specific weights; ours is Orbitrap, not timsTOF)
+  The reason for the move is that the precursor-mass penalty survived until 5.2.0
+  removed it from de novo mode (PR #575), so 5.0.0 is not sufficient.
 
-  Pre-flight checks before switching, neither yet done:
-  - `process_casanovo_results` requires the mzTab columns `sequence`, `charge`,
-    `search_engine_score[1]`, `calc_mass_to_charge`, `exp_mass_to_charge`. Confirm
-    5.2.0 still emits all five.
+  **The code changes are done (2026-07-31); only the image publish remains.**
+  `modules/casanovo.nf`, `main.nf` and `params.casanovo_weights` have all been
+  updated and run end to end against a locally built `casanovo:local-5.2.0`
+  (see the working directory's `CLAUDE.md` §"Local unpublished images"). What is
+  left is to publish that image and bump `container_images.config`.
+
+  Note the weights decision changed: rather than the released
+  `casanovo_orbitrap_v5-2-0.ckpt`, the image **bakes in the custom checkpoint**
+  `casa-bigger2.best_20260427.ckpt`, and `params.casanovo_weights` is a path
+  *inside the container* (`/opt/casanovo/weights/...`) rather than a URL. Set it to
+  `''` to omit `--model` and let Casanovo download a released checkpoint instead.
+
+  Two CLI/config breakages this required, worth knowing before touching it again:
+  - **`--output` no longer exists.** It is `--output_dir` + `--output_root`, and the
+    root keeps its suffix (`--output_root foo` → `foo.mztab`, `foo.log`).
+  - **A partial config file is rejected** with `Missing expected config option(s)`.
+    A Casanovo config must be the complete 5.2.0 default with edits applied on top.
+
+  Pre-flight checks:
+  - ~~`process_casanovo_results` requires the mzTab columns `sequence`, `charge`,
+    `search_engine_score[1]`, `calc_mass_to_charge`, `exp_mass_to_charge`.~~
+    **Verified 2026-07-31: 5.2.0 emits all five.**
   - 5.0.0 changed the peptide score from the mean to the **product** of per-residue
     scores, so `casanovo_best_score` — a RESET feature — changes meaning and
     distribution. Expect the ranking to shift; this is not a regression.
