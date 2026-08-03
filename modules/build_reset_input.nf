@@ -10,15 +10,22 @@ process BUILD_RESET_INPUT {
         path fasta_file
         val library_decoy_prefix
         val comet_decoy_prefix
+        val entrapment_prefix
 
     output:
         path("reset_input.txt"), emit: reset_input
         path("*.stderr"), emit: stderr
 
     script:
+    // An option, and passed BEFORE the positionals: the sixth positional is optional in
+    // the tool, so a seventh could never be told apart from that one being omitted.
+    // Omitted entirely when empty, because images predating the option reject it.
+    def entrapment_arg = entrapment_prefix?.toString()?.trim() \
+        ? "--entrapment_prefix ${entrapment_prefix} " : ''
     """
     echo "Collecting comet peptides..."
     python3 /usr/local/bin/build_reset_input.py \
+        ${entrapment_arg}\
         ${comet_peptides} \
         ${casanovo_peptides} \
         ${homology_search_results} \

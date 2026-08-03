@@ -64,6 +64,8 @@ annotated.fasta ─GENERATE_LIBRARY_DECOYS─┬─CREATE_DIAMOND_DB─┐      
 | `MSCONVERT` | `modules/msconvert.nf` | `proteowizard` | `.raw` → `.mzML` (peak picking). Skipped when input is already `.mzML`. `storeDir`-cached. |
 | `GENERATE_COMET_DECOYS` | `modules/generate_decoys.nf` | `ms_denovo_db_utils` | Reverse-decoy the subset FASTA. Cache: `fasta_cache/comet`. |
 | `GENERATE_LIBRARY_DECOYS` | `modules/generate_decoys.nf` | `ms_denovo_db_utils` | Reverse-decoy the annotated FASTA (handles gzip). Cache: `fasta_cache/library`. |
+| `GENERATE_COMET_ENTRAPMENTS` | `modules/generate_entrapments.nf` | `ms_denovo_db_utils` | **Off by default.** Adds shuffled entrapment proteins to the subset FASTA, *before* its decoys. Cache: `fasta_cache/comet`. |
+| `GENERATE_LIBRARY_ENTRAPMENTS` | `modules/generate_entrapments.nf` | `ms_denovo_db_utils` | **Off by default.** Adds shuffled entrapment proteins to the annotated FASTA, *before* its decoys. Cache: `fasta_cache/library`. |
 | `COMET` | `modules/comet.nf` | `comet` | Database search (`-P` params, `-D` target+decoy FASTA). |
 | `CASANOVO` | `modules/casanovo.nf` | `casanovo` | De novo sequencing (`casanovo sequence`). GPU-aware. |
 | `CREATE_PEPTIDE_FASTA` | `modules/create_peptide_fasta.nf` | `ms_denovo_db_utils` | Collapse Comet+Casanovo PSMs to distinct peptides; emit combined query FASTA. |
@@ -76,6 +78,64 @@ annotated.fasta ─GENERATE_LIBRARY_DECOYS─┬─CREATE_DIAMOND_DB─┐      
 `--initial_dir combined_rank_score --train_FDR_threshold 0.05
 --dynamic_competition F --FDR_threshold 1 --report_decoys T`. These have been
 actively tuned (see git history) and are a likely place for future iteration.
+
+---
+
+### 2.1 Entrapment (FDR validation) — off by default
+
+Entrapment proteins are shuffled sequences that cannot be in the sample, added to a
+searched database so that any accepted hit on one is false by construction. Counting
+them estimates the false discoveries hiding among the real targets, which is the only
+thing in this project that measures whether the claimed FDR is *correct*. The design
+lives in `ENTRAPMENT_DESIGN.md` in the working directory above this repo.
+
+```
+annotated.fasta ─GENERATE_LIBRARY_ENTRAPMENTS─► GENERATE_LIBRARY_DECOYS ─► CREATE_DIAMOND_DB
+                        (T + E)                    (T + E + dT + dE)
+```
+
+**The order is load-bearing.** Entrapments are injected *before* decoy generation so
+the decoy step covers the expanded database and every entrapment gets its own decoy,
+keeping target:decoy at 1:1. Injecting afterwards would leave targets outnumbering
+decoys and bias the FDR estimate *low* — the one direction that makes the experiment
+useless, because it biases toward concluding control is fine.
+
+| Param | Default | Meaning |
+|---|---|---|
+| `library_entrapment_ratio` | `''` (off) | Entrapments per protein in the annotated library. `1.0` is the paired design; it **doubles the DIAMOND subject database** |
+| `library_entrapment_prefix` | `ENTRAPMENT_` | Accession prefix, applied *inside* the decoy prefix |
+| `comet_entrapment_ratio` | `''` (off) | Same for the FASTA Comet searches. A separate experiment — see below |
+| `comet_entrapment_prefix` | `ENTRAPMENT_` | |
+| `entrapment_seed` | `''` (= 0) | Shuffle seed. Unlike `reset_seed`, fixing this is correct |
+
+Both processes are skipped entirely when their ratio is empty, so a run without
+entrapment produces exactly the DAG it did before these existed (verified: 10 stub
+processes either way). A ratio of `0` is *not* the same as empty — it runs the step
+and adds nothing.
+
+**Do not set both ratios at once.** They test different things: the library side asks
+whether RESET's FDR estimate over library regions is correct, the Comet side whether
+the Comet arm emits false query peptides. Run together, a surprising number cannot be
+attributed to either population.
+
+Prefixes compose with the **decoy prefix outermost**, because decoys are generated
+last:
+
+```
+sp|P12345|FOO                                original target     Label +1
+ENTRAPMENT_sp|P12345|FOO                     entrapment target   Label +1
+LIBRARY_DECOY_sp|P12345|FOO                  decoy of original   Label -1
+LIBRARY_DECOY_ENTRAPMENT_sp|P12345|FOO       decoy of entrapment Label -1
+```
+
+Entrapments are `Label +1` and compete as targets — they must be indistinguishable to
+RESET, which is the whole point. Membership is an orthogonal axis, recovered
+downstream from the `Proteins` column by stripping the decoy prefix **first** and only
+then testing for the entrapment prefix.
+
+`BUILD_RESET_INPUT` receives `--entrapment_prefix` only when the library actually
+carries entrapments; otherwise the flag is omitted and its output is byte-identical to
+what it produced before entrapment existed.
 
 ---
 
@@ -240,6 +300,14 @@ Casanovo.
 - **Decoy `storeDir` caches are separated** into `fasta_cache/comet` and
   `fasta_cache/library` precisely because both processes emit
   `<basename>.plusdecoys.fasta`; do not merge them back into one directory.
+- **Entrapment parameters are encoded in the FASTA filename, and must stay that way.**
+  `storeDir` keys on filename alone, so changing `library_entrapment_ratio` or
+  `entrapment_seed` changes the file's *contents* but not its name — a database built
+  at one ratio would be served unchanged for a run at another, silently, and the run
+  would report an FDP against a database it never searched. `GENERATE_*_ENTRAPMENTS`
+  therefore emits `<basename>.ent<ratio>-s<seed>.fasta` (dots become `p`, because
+  Nextflow's `baseName` would eat them), and the tag propagates automatically into
+  `<basename>.ent1p0-s7.plusdecoys.fasta` and thence into the DIAMOND DB.
 - **`CREATE_PEPTIDE_FASTA` passes explicit staged inputs** (`${comet_results_files}`,
   `${casanovo_results_files}`) rather than `*.txt`/`*.mztab` globs — the globs could
   match the process's own tee output files. Keep it explicit.
